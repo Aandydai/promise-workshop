@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>闪卡复习 - 定语从句学习工坊</title>
+  <meta name="description" content="闪卡复习定语从句核心语法点">
+  <meta name="robots" content="noindex">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📝</text></svg>">
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#FBBF24">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/minimal.css">
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">📝 定语从句工坊</a>
+    <div class="nav-links">
+      <a href="learn.html">学习</a>
+      <a href="flashcard.html" class="active">闪卡</a>
+      <a href="roots.html">索引</a>
+      <a href="progress.html">进度</a>
+    </div>
+  </div>
+</nav>
+
+<div class="flash-wrap">
+  <div class="flashcard" id="flashcard" onclick="toggleFlip()">
+    <div id="cardFront">
+      <div style="font-size:0.8rem;color:var(--color-text-tertiary);margin-bottom:12px" id="fcOrigin"></div>
+      <div style="font-size:1.4rem;font-weight:700;margin-bottom:16px" id="fcRoot"></div>
+      <div style="font-size:1rem;color:var(--color-text-secondary)" id="fcMeaning"></div>
+    </div>
+    <div id="cardBack" style="display:none">
+      <div style="font-size:1rem;line-height:1.8;color:var(--color-text)" id="fcDesc"></div>
+    </div>
+  </div>
+  <div class="flash-hint">点击卡片翻转 · 使用 ← → 键翻页</div>
+  <div class="flash-counter" id="fcCounter"></div>
+  <div class="flash-nav">
+    <button class="btn btn-secondary btn-sm" onclick="prevCard()">← 上一张</button>
+    <button class="btn btn-secondary btn-sm" onclick="shuffleCards()">🔀 随机顺序</button>
+    <button class="btn btn-secondary btn-sm" onclick="nextCard()">下一张 →</button>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="footer-tagline">从规则到实战，定语从句不再丢分</div>
+</footer>
+
+<script src="js/wordData.js"></script>
+<script src="js/siteConfig.js"></script>
+<script src="js/storage.js"></script>
+<script>
+(function() {
+  var idx = 0;
+  var cards = WordRoots.slice();
+  var flipped = false;
+
+  function renderCard() {
+    var item = cards[idx];
+    document.getElementById('fcOrigin').textContent = item.origin;
+    document.getElementById('fcRoot').textContent = item.root;
+    document.getElementById('fcMeaning').textContent = item.meaning;
+    document.getElementById('fcDesc').textContent = item.description;
+    document.getElementById('fcCounter').textContent = (idx + 1) + ' / ' + cards.length;
+    resetFlip();
+  }
+
+  function toggleFlip() {
+    var front = document.getElementById('cardFront');
+    var back = document.getElementById('cardBack');
+    flipped = !flipped;
+    front.style.display = flipped ? 'none' : 'flex';
+    front.style.flexDirection = 'column';
+    back.style.display = flipped ? 'block' : 'none';
+    document.getElementById('flashcard').classList.toggle('flipped', flipped);
+  }
+
+  function resetFlip() {
+    flipped = false;
+    var front = document.getElementById('cardFront');
+    var back = document.getElementById('cardBack');
+    front.style.display = 'flex';
+    front.style.flexDirection = 'column';
+    back.style.display = 'none';
+    document.getElementById('flashcard').classList.remove('flipped');
+  }
+
+  window.toggleFlip = toggleFlip;
+
+  window.prevCard = function() {
+    idx = (idx - 1 + cards.length) % cards.length;
+    renderCard();
+  };
+
+  window.nextCard = function() {
+    idx = (idx + 1) % cards.length;
+    renderCard();
+  };
+
+  window.shuffleCards = function() {
+    for (var i = cards.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var tmp = cards[i]; cards[i] = cards[j]; cards[j] = tmp;
+    }
+    idx = 0;
+    renderCard();
+  };
+
+  document.onkeydown = function(e) {
+    if (e.key === 'ArrowLeft') prevCard();
+    if (e.key === 'ArrowRight') nextCard();
+    if (e.key === ' ') { e.preventDefault(); toggleFlip(); }
+  };
+
+  renderCard();
+})();
+</script>
+</body>
+</html>

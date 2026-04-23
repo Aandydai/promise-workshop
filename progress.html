@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>学习进度 - 定语从句学习工坊</title>
+  <meta name="description" content="查看定语从句学习进度">
+  <meta name="robots" content="noindex">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📝</text></svg>">
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#FBBF24">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/minimal.css">
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">📝 定语从句工坊</a>
+    <div class="nav-links">
+      <a href="learn.html">学习</a>
+      <a href="flashcard.html">闪卡</a>
+      <a href="roots.html">索引</a>
+      <a href="progress.html" class="active">进度</a>
+    </div>
+  </div>
+</nav>
+
+<div class="progress-page">
+  <div class="progress-header">
+    <h1 style="font-size:1.8rem;font-weight:700;margin-bottom:8px">学习进度</h1>
+    <p style="color:var(--color-text-secondary)">追踪你的定语从句学习之旅</p>
+  </div>
+
+  <div id="progressContent"></div>
+</div>
+
+<footer class="footer">
+  <div class="footer-tagline">从规则到实战，定语从句不再丢分</div>
+</footer>
+
+<script src="js/wordData.js"></script>
+<script src="js/siteConfig.js"></script>
+<script src="js/storage.js"></script>
+<script>
+(function() {
+  function showFeedback(message, isSuccess) {
+    var toast = document.createElement('div');
+    toast.className = 'feedback-toast ' + (isSuccess ? 'success' : 'error');
+    toast.textContent = message;
+    document.body.appendChild(toast);
+    setTimeout(function() { toast.remove(); }, 3000);
+  }
+
+  function render() {
+    var progress = getProgress();
+    var masteredCount = progress.mastered.length;
+    var visitedCount = progress.visited.length;
+    var total = WordRoots.length;
+    var pct = Math.round(masteredCount / total * 100);
+
+    var masteredItems = WordRoots.filter(function(item) {
+      return progress.mastered.includes(item.id);
+    });
+
+    var radius = 50;
+    var circumference = 2 * Math.PI * radius;
+    var offset = circumference - (pct / 100) * circumference;
+
+    var html = '';
+
+    // Progress circle
+    html += '<div class="progress-circle">';
+    html += '<svg width="120" height="120" viewBox="0 0 120 120">';
+    html += '<circle cx="60" cy="60" r="' + radius + '" fill="none" stroke="#E2E8F0" stroke-width="8"/>';
+    html += '<circle cx="60" cy="60" r="' + radius + '" fill="none" stroke="#FBBF24" stroke-width="8"';
+    html += ' stroke-dasharray="' + circumference + '" stroke-dashoffset="' + offset + '" stroke-linecap="round"/>';
+    html += '</svg>';
+    html += '<div class="progress-center">' + pct + '%</div>';
+    html += '</div>';
+
+    // Stats
+    html += '<div class="progress-stats">';
+    html += '<div class="progress-stat"><div class="progress-stat-value">' + masteredCount + '</div><div class="progress-stat-label">已掌握</div></div>';
+    html += '<div class="progress-stat"><div class="progress-stat-value">' + visitedCount + '</div><div class="progress-stat-label">已学习</div></div>';
+    html += '<div class="progress-stat"><div class="progress-stat-value">' + total + '</div><div class="progress-stat-label">总计</div></div>';
+    html += '<div class="progress-stat"><div class="progress-stat-value">' + (total - masteredCount) + '</div><div class="progress-stat-label">未掌握</div></div>';
+    html += '</div>';
+
+    // Mastered list
+    if (masteredItems.length > 0) {
+      html += '<div class="mastered-list">';
+      html += '<h3 style="font-size:1.1rem;font-weight:700;margin-bottom:16px">已掌握的语法点</h3>';
+      masteredItems.forEach(function(item) {
+        html += '<div class="mastered-item">';
+        html += '<div class="mastered-check">✓</div>';
+        html += '<a href="root-detail.html?id=' + item.id + '" style="color:var(--color-text)" class="mastered-name">' + item.root + '</a>';
+        html += '</div>';
+      });
+      html += '</div>';
+    } else {
+      html += '<div class="empty-state">';
+      html += '<div class="empty-icon">📖</div>';
+      html += '<p>还没有掌握任何语法点</p>';
+      html += '<br><a href="learn.html" class="btn btn-primary">开始学习 →</a>';
+      html += '</div>';
+    }
+
+    // Reset button
+    if (masteredCount > 0) {
+      html += '<div style="text-align:center;margin-top:40px">';
+      html += '<button class="btn btn-secondary btn-sm" onclick="resetProgress()" style="color:var(--color-error)">🗑 清空学习记录</button>';
+      html += '</div>';
+    }
+
+    document.getElementById('progressContent').innerHTML = html;
+  }
+
+  window.resetProgress = function() {
+    if (confirm('确定要清空所有学习记录吗？此操作无法撤销。')) {
+      clearProgress();
+      localStorage.removeItem('rc_learn_v1');
+      showFeedback('✓ 学习记录已清空', true);
+      render();
+    }
+  };
+
+  render();
+})();
+</script>
+</body>
+</html>

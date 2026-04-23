@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://relative-clause.vercel.app/sitemap.xml

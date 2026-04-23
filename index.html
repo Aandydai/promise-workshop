@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>定语从句学习工坊 - 25个核心语法点</title>
+  <meta name="description" content="从规则到实战，定语从句不再丢分。基于高考真题和课标要求，精选25个定语从句核心语法点。">
+  <meta name="keywords" content="定语从句,英语语法,高考英语,关系代词,关系副词">
+  <meta name="author" content="乔木">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://relative-clause.vercel.app">
+  <meta property="og:title" content="定语从句学习工坊">
+  <meta property="og:description" content="从规则到实战，定语从句不再丢分。25个核心语法点，50+精选例句。">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://relative-clause.vercel.app">
+  <meta property="og:site_name" content="定语从句学习工坊">
+  <meta property="og:locale" content="zh_CN">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="定语从句学习工坊">
+  <meta name="twitter:description" content="从规则到实战，定语从句不再丢分。25个核心语法点，50+精选例句。">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📝</text></svg>">
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#FBBF24">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/minimal.css">
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">📝 定语从句工坊</a>
+    <div class="nav-links">
+      <a href="learn.html" class="active">学习</a>
+      <a href="flashcard.html">闪卡</a>
+      <a href="roots.html">索引</a>
+      <a href="progress.html">进度</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="hero-badge">🔥 高考英语高频考点</div>
+  <h1 class="hero-title">25个核心语法点<br><span>彻底搞懂</span>定语从句</h1>
+  <p class="hero-subtitle">从关系代词 who/which/that 到非限制性定语从句，系统掌握高考英语必考语法</p>
+  <div class="hero-actions">
+    <a href="learn.html" class="btn btn-primary">开始第一个语法点 →</a>
+    <a href="flashcard.html" class="btn btn-secondary">闪卡复习</a>
+  </div>
+</header>
+
+<section class="stats">
+  <div class="stat-card">
+    <div class="stat-value">25</div>
+    <div class="stat-label">核心语法点</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-value">50+</div>
+    <div class="stat-label">精选例句</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-value">25</div>
+    <div class="stat-label">即时测验</div>
+  </div>
+</section>
+
+<section class="container">
+  <h2 class="section-title">🔥 动画演示</h2>
+  <p class="section-sub">点击任意卡片开始学习</p>
+  <div class="demo-scroll">
+    <div class="demo-list" id="demoList"></div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="footer-tagline">从规则到实战，定语从句不再丢分</div>
+  <p class="footer-desc">基于高考真题和课标要求，精选25个定语从句核心语法点。从关系词体系到限制性与非限制性区别，从只能用 that 的情况到 as/which 引导非限制性从句，帮你建立完整的定语从句知识体系。</p>
+</footer>
+
+<script src="js/wordData.js"></script>
+<script src="js/siteConfig.js"></script>
+<script src="js/storage.js"></script>
+<script>
+(function() {
+  // Load site config
+  const config = window.siteConfig;
+
+  // Demo animation on hero
+  const heroTitle = document.querySelector('.hero-title');
+  heroTitle.innerHTML = config.hero.title.map((line, i) =>
+    i === config.hero.title.length - 1 ? `<span>${line}</span>` : line
+  ).join('<br>');
+
+  // Load demo items
+  const demoList = document.getElementById('demoList');
+  const demoCount = config.hero.animation.demoCount;
+  WordRoots.slice(0, demoCount).forEach(function(item) {
+    const card = document.createElement('a');
+    card.href = 'root-detail.html?id=' + item.id;
+    card.className = 'demo-card';
+    card.innerHTML = '<div class="demo-root">' + item.root + '</div>' +
+      '<div class="demo-origin">' + item.origin + '</div>' +
+      '<div class="demo-meaning">' + item.meaning + '</div>';
+    demoList.appendChild(card);
+  });
+
+  // Update nav active state
+  const links = document.querySelectorAll('.nav-links a');
+  links.forEach(function(a) { a.classList.remove('active'); });
+})();
+</script>
+</body>
+</html>

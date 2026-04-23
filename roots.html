@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>语法点索引 - 定语从句学习工坊</title>
+  <meta name="description" content="浏览定语从句全部25个核心语法点">
+  <meta name="robots" content="noindex">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📝</text></svg>">
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#FBBF24">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/minimal.css">
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">📝 定语从句工坊</a>
+    <div class="nav-links">
+      <a href="learn.html">学习</a>
+      <a href="flashcard.html">闪卡</a>
+      <a href="roots.html" class="active">索引</a>
+      <a href="progress.html">进度</a>
+    </div>
+  </div>
+</nav>
+
+<div class="container">
+  <h1 class="section-title">语法点索引</h1>
+  <p class="section-sub" id="countLabel">共 25 个语法点</p>
+
+  <div class="search-bar">
+    <input type="text" class="search-input" id="searchInput" placeholder="搜索语法点..." oninput="filterCards()">
+    <select class="btn btn-secondary btn-sm" id="filterSelect" onchange="filterCards()" style="padding:10px 16px">
+      <option value="">全部类别</option>
+      <option value="关系代词体系">关系代词体系</option>
+      <option value="关系副词体系">关系副词体系</option>
+      <option value="从句类型">从句类型</option>
+      <option value="高频考点对比">高频考点对比</option>
+      <option value="从句结构">从句结构</option>
+      <option value="特殊关系词">特殊关系词</option>
+      <option value="特殊结构">特殊结构</option>
+      <option value="从句成分分析">从句成分分析</option>
+      <option value="常见错误辨析">常见错误辨析</option>
+      <option value="解题策略">解题策略</option>
+    </select>
+  </div>
+
+  <div class="card-grid" id="cardGrid"></div>
+  <div class="empty-state" id="emptyState" style="display:none">
+    <div class="empty-icon">🔍</div>
+    <p>没有找到匹配的语法点</p>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="footer-tagline">从规则到实战，定语从句不再丢分</div>
+</footer>
+
+<script src="js/wordData.js"></script>
+<script src="js/siteConfig.js"></script>
+<script src="js/storage.js"></script>
+<script>
+(function() {
+  function renderItems(items) {
+    var grid = document.getElementById('cardGrid');
+    var empty = document.getElementById('emptyState');
+    grid.innerHTML = '';
+    if (items.length === 0) {
+      empty.style.display = 'block';
+      return;
+    }
+    empty.style.display = 'none';
+    items.forEach(function(item) {
+      var mastered = isMastered(item.id);
+      var card = document.createElement('a');
+      card.href = 'root-detail.html?id=' + item.id;
+      card.className = 'card';
+      card.innerHTML =
+        '<div class="card-root">' + item.root + '</div>' +
+        '<div class="card-origin">' + item.origin + '</div>' +
+        '<div class="card-meaning">' + item.meaning + '</div>' +
+        '<div class="card-footer">' +
+          '<span style="font-size:0.8rem;color:var(--color-text-tertiary)">ID: ' + item.id + '</span>' +
+          (mastered ? '<span class="mastered-badge">✓ 已掌握</span>' : '') +
+        '</div>';
+      grid.appendChild(card);
+    });
+    document.getElementById('countLabel').textContent = '共 ' + items.length + ' 个语法点';
+  }
+
+  window.filterCards = function() {
+    var q = document.getElementById('searchInput').value.trim().toLowerCase();
+    var cat = document.getElementById('filterSelect').value;
+    var filtered = WordRoots.filter(function(item) {
+      var matchQ = !q || item.root.toLowerCase().includes(q) || item.meaning.toLowerCase().includes(q) || item.origin.toLowerCase().includes(q);
+      var matchCat = !cat || item.origin === cat;
+      return matchQ && matchCat;
+    });
+    renderItems(filtered);
+  };
+
+  renderItems(WordRoots);
+})();
+</script>
+</body>
+</html>

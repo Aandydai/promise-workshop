@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>语法点详情 - 定语从句学习工坊</title>
+  <meta name="description" content="定语从句语法点详解">
+  <meta name="robots" content="noindex">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📝</text></svg>">
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#FBBF24">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/minimal.css">
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">📝 定语从句工坊</a>
+    <div class="nav-links">
+      <a href="learn.html">学习</a>
+      <a href="flashcard.html">闪卡</a>
+      <a href="roots.html">索引</a>
+      <a href="progress.html">进度</a>
+    </div>
+  </div>
+</nav>
+
+<div class="detail-wrap" id="app"></div>
+
+<footer class="footer">
+  <div class="footer-tagline">从规则到实战，定语从句不再丢分</div>
+</footer>
+
+<script src="js/wordData.js"></script>
+<script src="js/siteConfig.js"></script>
+<script src="js/storage.js"></script>
+<script>
+(function() {
+  function getQueryId() {
+    var params = new URLSearchParams(window.location.search);
+    return parseInt(params.get('id')) || 1;
+  }
+
+  function showFeedback(message, isSuccess) {
+    var toast = document.createElement('div');
+    toast.className = 'feedback-toast ' + (isSuccess ? 'success' : 'error');
+    toast.textContent = message;
+    document.body.appendChild(toast);
+    setTimeout(function() { toast.remove(); }, 3000);
+  }
+
+  var id = getQueryId();
+  var item = WordRoots.find(function(x) { return x.id === id; });
+
+  if (!item) {
+    document.getElementById('app').innerHTML =
+      '<div class="empty-state" style="padding-top:100px"><div class="empty-icon">📝</div><p>未找到该语法点</p><br><a href="roots.html" class="btn btn-primary">返回索引</a></div>';
+    return;
+  }
+
+  markVisited(item.id);
+  var mastered = isMastered(item.id);
+
+  var prevItem = WordRoots.find(function(x) { return x.id === id - 1; });
+  var nextItem = WordRoots.find(function(x) { return x.id === id + 1; });
+
+  var html = '';
+  html += '<div style="margin-bottom:24px"><a href="roots.html" class="btn btn-secondary btn-sm">← 返回索引</a></div>';
+  html += '<div class="detail-origin">' + item.origin + '</div>';
+  html += '<h1 class="detail-root">' + item.root + '</h1>';
+  html += '<div class="detail-meaning">' + item.meaning + '</div>';
+  html += '<div class="detail-desc">' + item.description + '</div>';
+
+  item.examples.forEach(function(ex) {
+    html += '<div class="example-item">';
+    html += '<div class="example-sentence">' + ex.word + '</div>';
+    html += '<div class="example-meaning">' + ex.meaning + '</div>';
+    html += '<div class="example-breakdown">' + ex.breakdown.root + '</div>';
+    html += '<div style="font-size:0.875rem;color:var(--color-text-secondary);margin-top:8px;line-height:1.7">' + ex.explanation + '</div>';
+    html += '</div>';
+  });
+
+  // Quiz section
+  if (item.quiz) {
+    html += '<div class="quiz-section" id="quizSection">';
+    html += '<div class="quiz-q">' + item.quiz.question + '</div>';
+    html += '<div class="quiz-options" id="quizOptions">';
+    item.quiz.options.forEach(function(opt, i) {
+      html += '<button class="quiz-option" onclick="checkAnswer(' + i + ')">' + opt + '</button>';
+    });
+    html += '</div>';
+    html += '<div id="quizFeedback" style="display:none"></div>';
+    html += '</div>';
+  }
+
+  // Navigation
+  html += '<div style="display:flex;justify-content:space-between;margin-top:32px;padding-top:24px;border-top:1px solid var(--color-border);flex-wrap:wrap;gap:12px">';
+  if (prevItem) {
+    html += '<a href="root-detail.html?id=' + prevItem.id + '" class="btn btn-secondary btn-sm">← ' + prevItem.root + '</a>';
+  } else {
+    html += '<span></span>';
+  }
+  html += '<button class="master-btn" id="masterBtn" onclick="toggleMaster()">' + (mastered ? '取消掌握' : '标记为掌握') + '</button>';
+  if (nextItem) {
+    html += '<a href="root-detail.html?id=' + nextItem.id + '" class="btn btn-secondary btn-sm">' + nextItem.root + ' →</a>';
+  } else {
+    html += '<a href="roots.html" class="btn btn-secondary btn-sm">返回索引</a>';
+  }
+  html += '</div>';
+
+  document.getElementById('app').innerHTML = html;
+
+  window.checkAnswer = function(selected) {
+    var correct = item.quiz.correctAnswer;
+    var options = document.querySelectorAll('.quiz-option');
+    options.forEach(function(btn, i) {
+      btn.disabled = true;
+      if (i === correct) btn.classList.add('correct');
+      else if (i === selected && selected !== correct) btn.classList.add('wrong');
+    });
+    var feedback = document.getElementById('quizFeedback');
+    feedback.style.display = 'block';
+    if (selected === correct) {
+      feedback.className = 'quiz-feedback correct';
+      feedback.textContent = '✓ 回答正确！';
+    } else {
+      feedback.className = 'quiz-feedback wrong';
+      feedback.textContent = '✗ 回答错误，正确答案是：' + item.quiz.options[correct];
+    }
+  };
+
+  window.toggleMaster = function() {
+    if (isMastered(item.id)) {
+      unmarkMastered(item.id);
+      showFeedback('已取消掌握标记', false);
+      document.getElementById('masterBtn').textContent = '标记为掌握';
+    } else {
+      markMastered(item.id);
+      showFeedback('✓ 已标记为掌握！', true);
+      document.getElementById('masterBtn').textContent = '取消掌握';
+    }
+  };
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>学习 - 定语从句学习工坊</title>
+  <meta name="description" content="渐进式学习定语从句核心语法点">
+  <meta name="robots" content="noindex">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📝</text></svg>">
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#FBBF24">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/minimal.css">
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">📝 定语从句工坊</a>
+    <div class="nav-links">
+      <a href="learn.html" class="active">学习</a>
+      <a href="flashcard.html">闪卡</a>
+      <a href="roots.html">索引</a>
+      <a href="progress.html">进度</a>
+    </div>
+  </div>
+</nav>
+
+<div class="learn-wrap" id="app"></div>
+
+<footer class="footer">
+  <div class="footer-tagline">从规则到实战，定语从句不再丢分</div>
+  <p class="footer-desc">系统掌握高考定语从句核心语法</p>
+</footer>
+
+<script src="js/wordData.js"></script>
+<script src="js/siteConfig.js"></script>
+<script src="js/storage.js"></script>
+<script>
+(function() {
+  var STORAGE_KEY = 'rc_learn_v1';
+
+  function getState() {
+    try {
+      var raw = localStorage.getItem(STORAGE_KEY);
+      return raw ? JSON.parse(raw) : { current: 1 };
+    } catch(e) { return { current: 1 }; }
+  }
+
+  function saveState(state) {
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch(e) {}
+  }
+
+  function showFeedback(message, isSuccess) {
+    var toast = document.createElement('div');
+    toast.className = 'feedback-toast ' + (isSuccess ? 'success' : 'error');
+    toast.textContent = message;
+    document.body.appendChild(toast);
+    setTimeout(function() { toast.remove(); }, 3000);
+  }
+
+  var state = getState();
+  var current = state.current || 1;
+  var total = WordRoots.length;
+  var item = WordRoots.find(function(x) { return x.id === current; });
+
+  function render() {
+    var app = document.getElementById('app');
+    var progPct = ((current - 1) / total * 100).toFixed(0);
+
+    var mastered = isMastered(item.id);
+
+    var html = '<div class="learn-progress">' +
+      '<div class="progress-bar"><div class="progress-fill" style="width:' + progPct + '%"></div></div>' +
+      '<span class="progress-text">' + current + ' / ' + total + '</span></div>';
+
+    html += '<div class="learn-card">';
+    html += '<div class="learn-origin">' + item.origin + '</div>';
+    html += '<div class="learn-root">' + item.root + '</div>';
+    html += '<div class="learn-meaning">' + item.meaning + '</div>';
+    html += '<div class="learn-desc">' + item.description + '</div>';
+
+    item.examples.forEach(function(ex) {
+      html += '<div class="example-item">';
+      html += '<div class="example-sentence">' + ex.word + '</div>';
+      html += '<div class="example-meaning">' + ex.meaning + '</div>';
+      html += '<div class="example-breakdown">' + ex.breakdown.root + '</div>';
+      html += '<div style="font-size:0.875rem;color:var(--color-text-secondary);margin-top:6px">' + ex.explanation + '</div>';
+      html += '</div>';
+    });
+
+    html += '<div class="learn-nav">';
+    html += '<button class="btn btn-secondary btn-sm" onclick="prev()"' + (current <= 1 ? ' disabled style="opacity:0.3"' : '') + '>← 上一个</button>';
+
+    if (mastered) {
+      html += '<span style="color:var(--color-success);font-weight:600;font-size:0.9rem">✓ 已掌握</span>';
+    } else {
+      html += '<button class="master-btn" onclick="markM()">标记为已掌握</button>';
+    }
+
+    html += '<button class="btn btn-secondary btn-sm" onclick="next()"' + (current >= total ? ' disabled style="opacity:0.3"' : '') + '>下一个 →</button>';
+    html += '</div></div>';
+
+    app.innerHTML = html;
+  }
+
+  window.prev = function() {
+    if (current <= 1) return;
+    state.current = current - 1;
+    saveState(state);
+    item = WordRoots.find(function(x) { return x.id === state.current; });
+    render();
+    window.scrollTo(0, 0);
+  };
+
+  window.next = function() {
+    if (current >= total) {
+      showFeedback('🎉 已完成全部 ' + total + ' 个语法点！', true);
+      return;
+    }
+    state.current = current + 1;
+    saveState(state);
+    item = WordRoots.find(function(x) { return x.id === state.current; });
+    render();
+    window.scrollTo(0, 0);
+  };
+
+  window.markM = function() {
+    markMastered(item.id);
+    showFeedback('✓ 已标记为掌握！', true);
+    render();
+  };
+
+  if (!item) {
+    document.getElementById('app').innerHTML = '<div class="empty-state"><div class="empty-icon">📝</div><p>未找到该语法点，<a href="index.html">返回首页</a></p></div>';
+    return;
+  }
+  markVisited(item.id);
+  render();
+})();
+</script>
+</body>
+</html>
